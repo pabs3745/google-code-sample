@@ -29,3 +29,6 @@ class Video:
     def tags(self) -> Sequence[str]:
         """Returns the list of tags of a video."""
         return self._tags
+
+    def __lt__(self, other):
+        return self.title < other.title

@@ -1,4 +1,5 @@
 """A video player class."""
+import random
 
 from .video_library import VideoLibrary
 
@@ -8,15 +9,30 @@ class VideoPlayer:
 
     def __init__(self):
         self._video_library = VideoLibrary()
+        self.isPlaying = False
+        self.titlePlaying = ""
 
     def number_of_videos(self):
         num_videos = len(self._video_library.get_all_videos())
         print(f"{num_videos} videos in the library")
 
+    def sortListOfVideos(self):
+        """
+        Gets the list of videos, and returns them sorted
+        :return: allVideos - a sorted list of videos
+        """
+        allVideos = self._video_library.get_all_videos()
+        allVideos.sort()
+        return allVideos
+
     def show_all_videos(self):
         """Returns all videos."""
-
-        print("show_all_videos needs implementation")
+      #  allVideos = self._video_library.get_all_videos()
+       # allVideos.sort()
+        allVideos = self.sortListOfVideos()
+        for video in allVideos:
+            tagString = ' '.join(video.tags)
+            print("{0} ({1}) [{2}]".format(video.title, video.video_id, tagString))
 
     def play_video(self, video_id):
         """Plays the respective video.
@@ -24,17 +40,58 @@ class VideoPlayer:
         Args:
             video_id: The video_id to be played.
         """
-        print("play_video needs implementation")
+        playingVideo = self._video_library.get_video(video_id)
+        if playingVideo is None:
+            print("Cannot play video: Video does not exist")
+        elif not self.isPlaying:
+            # videoTitle = playingVideo.title
+            self.setIsPlaying(True)
+            self.setTitlePlaying(playingVideo.title)
+            print("Playing video: {}".format(self.titlePlaying))
+        else:
+            if self.titlePlaying != playingVideo.title:
+                print("Stopping video: {}".format(self.titlePlaying))
+                self.setTitlePlaying(playingVideo.title)
+                print("Playing video: {}".format(self.titlePlaying))
+            else:
+                print("Stopping video: {}".format(self.titlePlaying))
+                print("Playing video: {}".format(self.titlePlaying))
+
+
+
+    def setIsPlaying(self, isPlaying):
+        """
+        Set isPlaying property to either True or False
+        :param isPlaying: boolean
+        """
+        self.isPlaying = isPlaying
+
+    def setTitlePlaying(self, aTitle):
+        """
+        Sets the value of the attribute titlePlaying
+        :param aTitle:
+        :return: none
+        """
+        self.titlePlaying = aTitle
+
 
     def stop_video(self):
         """Stops the current video."""
+        if self.isPlaying:
+            print("Stopping video: {}".format(self.titlePlaying))
+        else:
+            print("Cannot stop video: No video is currently playing")
 
-        print("stop_video needs implementation")
+
 
     def play_random_video(self):
         """Plays a random video from the video library."""
+        allVideos = self.sortListOfVideos()
+        randomNumber = random.randrange(0, len(self._video_library.get_all_videos()))
+        videoId = allVideos[randomNumber].video_id
+        self.play_video(videoId)
 
-        print("play_random_video needs implementation")
+
 
     def pause_video(self):
         """Pauses the current video."""
