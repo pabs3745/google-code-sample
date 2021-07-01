@@ -173,7 +173,6 @@ class VideoPlayer:
         ids = []
         for video in videosList:
             ids.append(video.video_id)
-        video = self._video_library.get_video(video_id)
 
         idsInPlayList = []
         for video in self.listOfPlayList:
@@ -186,6 +185,7 @@ class VideoPlayer:
         elif video_id in idsInPlayList:
             print("Cannot add video to {}: Video already added".format(playlist_name))
         else:
+            video = self._video_library.get_video(video_id)
             self.listOfPlayList.append(video)
             # self.listOfPlayList.append(video.video_id)
             print("Added video to {0}: {1}".format(self.playlist.getPlayListName(), video.title))
@@ -206,12 +206,17 @@ class VideoPlayer:
         Args:
             playlist_name: The playlist name.
         """
-        print("Showing playlist: {}".format(playlist_name))
-        if len(self.listOfPlayList) < 1:
-            print("  No videos here yet")
+
+        if playlist_name in self.listOfPlaylistNames:
+            print("Showing playlist: {}".format(playlist_name))
+            if len(self.listOfPlayList) < 1:
+                print("  No videos here yet")
+            else:
+                for video in self.listOfPlayList:
+                    tagString = ' '.join(video.tags)
+                    print("   {0} ({1}) [{2}]".format(video.title, video.video_id, tagString))
         else:
-            for video in self.listOfPlayList:
-                print("   {0} ({1}) [{2}]".format(video.title, video.video_id, video.tags))
+            print("Cannot show playlist {}: Playlist does not exist".format(playlist_name))
 
 
     def remove_from_playlist(self, playlist_name, video_id):
@@ -221,7 +226,15 @@ class VideoPlayer:
             playlist_name: The playlist name.
             video_id: The video_id to be removed.
         """
-        print("remove_from_playlist needs implementation")
+        video = self._video_library.get_video(video_id)
+        if playlist_name in self.listOfPlaylistNames:
+            if video in self.listOfPlayList:
+                self.listOfPlayList.remove(video)
+                print("Removed video from {0}: {1}".format(playlist_name, video.title))
+            else:
+                print("Cannot remove video from {}: Video is not in playlist".format(playlist_name))
+        else:
+            print("Cannot remove video from {}: Playlist does not exist".format(playlist_name))
 
     def clear_playlist(self, playlist_name):
         """Removes all videos from a playlist with a given name.
@@ -229,7 +242,9 @@ class VideoPlayer:
         Args:
             playlist_name: The playlist name.
         """
-        print("clears_playlist needs implementation")
+        print("search_videos needs implementation")
+
+
 
     def delete_playlist(self, playlist_name):
         """Deletes a playlist with a given name.
@@ -237,7 +252,12 @@ class VideoPlayer:
         Args:
             playlist_name: The playlist name.
         """
-        print("deletes_playlist needs implementation")
+        if playlist_name in self.listOfPlaylistNames:
+            self.listOfPlaylistNames.remove(playlist_name)
+            print("Deleted playlist: {}".format(playlist_name))
+        else:
+            print("Cannot delete playlist {}: Playlist does not exist".format(playlist_name))
+
 
     def search_videos(self, search_term):
         """Display all the videos whose titles contain the search_term.
